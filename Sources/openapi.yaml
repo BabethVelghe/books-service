@@ -19,6 +19,66 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Book'
+    post:
+      operationId: createBook
+      summary: Create a new book
+      description: Creates a new book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: The created book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+  /books/{id}:
+    get:
+      operationId: getById
+      summary: Get a book by ID
+      description: Returns a book with the specified ID
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the book
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+    put:
+      operationId: updateBook
+      summary: Update a book by ID
+      description: Updates a book with the specified ID
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the book
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: The updated book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
 components:
   schemas:
     Book:

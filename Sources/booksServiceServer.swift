@@ -39,6 +39,8 @@ extension Book {
             tls: .prefer(try .init(configuration: .clientDefault)))
         ), as: .psql)
         
+        app.migrations.add(CreateBooks())
+        try app.autoMigrate().wait()
         
         
         let transport = VaporTransport(routesBuilder: app)
