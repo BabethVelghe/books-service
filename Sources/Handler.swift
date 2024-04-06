@@ -11,22 +11,25 @@ import OpenAPIVapor
 import Vapor
 import Fluent
 import FluentPostgresDriver
+import Logging
 
 struct Handler: APIProtocol {
-    
+    var logger : Logger =  .init(label: "my-Handler")
     let app : Application
-    init(app: Application) {
+    
+    init(app: Application , logger: Logger) {
         self.app = app
     }
     
     func getAllBooks(_ input: Operations.getAllBooks.Input) async throws -> Operations.getAllBooks.Output {
-        
         let books = try await Book.query(on: app.db).all()
+        logger.info("successfull GET-request to database")
         
         var booksArray: Array<Components.Schemas.Book> = []
         books.forEach { book in
             booksArray.append(Components.Schemas.Book(id: "\(String(describing: book.id))", title: book.title, author: book.author))
         }
+        logger.info("Converted books of database to return object")
         return .ok(.init(body: .json(booksArray)))
 
         
@@ -37,6 +40,7 @@ struct Handler: APIProtocol {
     func getById(_ input: Operations.getById.Input) async throws -> Operations.getById.Output {
         let id = UUID(uuidString: input.path.id)
         guard let book = try await Book.find(id, on: app.db) else {
+            logger.debug("Can't find Book in database!")
             throw Abort(.notFound)
         }
         
@@ -48,6 +52,7 @@ struct Handler: APIProtocol {
     func createBook(_ input: Operations.createBook.Input) async throws -> Operations.createBook.Output {
         
         guard case .json(let bookInput) = input.body else {
+            logger.debug("Something went wrong with the Input.body")
             fatalError()
         }
         
@@ -68,6 +73,7 @@ struct Handler: APIProtocol {
     
     func updateBook(_ input: Operations.updateBook.Input) async throws -> Operations.updateBook.Output {
         guard case .json(let bookInput) = input.body else {
+            logger.debug("Something went wrong with the Input.body")
             fatalError()
         }
         let id = UUID(uuidString: bookInput.id)
