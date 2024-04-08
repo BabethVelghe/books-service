@@ -79,6 +79,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Book'
+  /users:
+    post:
+      operationId: createUser
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    example: "Passwords did not match"
 components:
   schemas:
     Book:
@@ -97,5 +123,35 @@ components:
         - id
         - title
         - author
+    UserCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        confirmPassword:
+          type: string
+      required:
+        - name
+        - email
+        - password
+        - confirmPassword
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        passwordHash:
+          type: string
+          format: password
         
           

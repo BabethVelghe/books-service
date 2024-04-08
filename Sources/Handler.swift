@@ -14,6 +14,9 @@ import FluentPostgresDriver
 import Logging
 
 struct Handler: APIProtocol {
+    
+    
+    
     var logger : Logger =  .init(label: "my-Handler")
     let app : Application
     
@@ -50,12 +53,11 @@ struct Handler: APIProtocol {
     
     
     func createBook(_ input: Operations.createBook.Input) async throws -> Operations.createBook.Output {
-        
         guard case .json(let bookInput) = input.body else {
             logger.debug("Something went wrong with the Input.body")
             fatalError()
         }
-        
+      
         let id = UUID(uuidString: bookInput.id)
         var book = Book(id: id, title: bookInput.title, author: bookInput.author)
         try await book.save(on: app.db)
@@ -95,7 +97,56 @@ struct Handler: APIProtocol {
         }
         return .ok(.init(body: .json(updatedBook)))
          
-        
+
     }
+    func createUser(_ input: Operations.createUser.Input) async throws -> Operations.createUser.Output {
+        guard case .json(let userInput) = input.body else {
+            fatalError()
+        }
+        
+        // Validate the input
+        let userCreate = User.Create(name: userInput.name, email: userInput.email, password: userInput.password, confirmPassword: userInput.confirmPassword)
+        //try User.Create.validate(content: userCreate)
+        
+        guard userInput.password == userInput.confirmPassword else {
+            throw Abort(.badRequest, reason: "Passwords did not match")
+        }
+        
+        
+        let user = try User(
+            name: userCreate.name,
+            email: userCreate.email,
+            passwordHash: Bcrypt.hash(userCreate.password)
+        )
+        // Save the user to the database
+        try await user.save(on: app.db)
+        
+        
+        
+        let userapi = Components.Schemas.User(name: user.name , email: user.email, passwordHash: user.passwordHash)
+
+        return .created(.init(body: .json(userapi)))
+    }
+    
+ /**   func login(_ input: Operations.login.Input) async throws -> Operations.login.Output {
+        guard case .json(let userInput) = input.body else {
+            fatalError()
+        }
+        
+        // Authenticate the user
+        
+        guard let user = try req.auth.require(User.self) else {
+            throw Abort(.unauthorized, reason: "Invalid email or password")
+        }
+
+        // Generate the user token
+        let token = try user.generateToken()
+
+        // Save the token to the database
+        try await token.save(on: app.db)
+
+        // Return the generated token
+        //return Operations.login.Output(token: token)
+    } */
     
 }

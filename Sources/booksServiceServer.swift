@@ -27,6 +27,8 @@ import Logging
         logger.info("Database connection secure");
         logger.info("Setting up migrations...");
         app.migrations.add(CreateBooks())
+        app.migrations.add(CreateUser())
+        app.migrations.add(CreateUserToken())
         try app.autoMigrate().wait()
         logger.info("migrations successfull added")
         

@@ -16,6 +16,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.14.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.7.2"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
+        
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,6 +31,7 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "PostgresNIO",package: "postgres-nio"),
                 .product(name: "Logging", package: "swift-log"),
+                
             ],
             plugins: [.plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")]
         ),
