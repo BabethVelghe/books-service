@@ -4,11 +4,13 @@ info:
   version: 1.0.0
 servers:
   - url: 'http://localhost:8080/api'
+
 paths:
   /books:
     get:
       operationId: getAllBooks
       summary: Get all books
+      
       description: Returns a list of all books
       responses:
         '200':
@@ -153,5 +155,9 @@ components:
         passwordHash:
           type: string
           format: password
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
         
           

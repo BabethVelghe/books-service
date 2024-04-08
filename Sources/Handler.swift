@@ -15,13 +15,14 @@ import Logging
 
 struct Handler: APIProtocol {
     
-    
+    // let passwordProtected : RoutesBuilder
     
     var logger : Logger =  .init(label: "my-Handler")
     let app : Application
     
-    init(app: Application , logger: Logger) {
+    init(app: Application , logger: Logger ) {
         self.app = app
+        //self.passwordProtected = passwordProtected
     }
     
     func getAllBooks(_ input: Operations.getAllBooks.Input) async throws -> Operations.getAllBooks.Output {
@@ -127,7 +128,6 @@ struct Handler: APIProtocol {
 
         return .created(.init(body: .json(userapi)))
     }
-    // test
     
  /**   func login(_ input: Operations.login.Input) async throws -> Operations.login.Output {
         guard case .json(let userInput) = input.body else {

@@ -32,6 +32,13 @@ import Logging
         try app.autoMigrate().wait()
         logger.info("migrations successfull added")
         
+        let passwordProtected = app.grouped(User.authenticator())
+        passwordProtected.post("login") { req async throws -> UserToken in
+            let user = try req.auth.require(User.self)
+            let token = try user.generateToken()
+            try await token.save(on: req.db)
+            return token
+        }
         
         let transport = VaporTransport(routesBuilder: app)
         let handler = Handler(app: app, logger: logger)
