@@ -14,7 +14,7 @@ import FluentPostgresDriver
 import Logging
 
 struct Handler: APIProtocol {
-    
+
     // let passwordProtected : RoutesBuilder
     
     var logger : Logger =  .init(label: "my-Handler")
@@ -128,6 +128,15 @@ struct Handler: APIProtocol {
 
         return .created(.init(body: .json(userapi)))
     }
+    
+    func GetMyBooks(_ input: Operations.GetMyBooks.Input) async throws -> Operations.GetMyBooks.Output {
+        <#code#>
+    }
+    
+    func addBookToMyList(_ input: Operations.addBookToMyList.Input) async throws -> Operations.addBookToMyList.Output {
+        <#code#>
+    }
+    
     
  /**   func login(_ input: Operations.login.Input) async throws -> Operations.login.Output {
         guard case .json(let userInput) = input.body else {
