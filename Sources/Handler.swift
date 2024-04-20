@@ -12,9 +12,10 @@ import Vapor
 import Fluent
 import FluentPostgresDriver
 import Logging
+import Dependencies
 
 struct Handler: APIProtocol {
-
+    @Dependency(\.request) var request
     // let passwordProtected : RoutesBuilder
     
     var logger : Logger =  .init(label: "my-Handler")
@@ -105,9 +106,7 @@ struct Handler: APIProtocol {
             fatalError()
         }
         
-        // Validate the input
         let userCreate = User.Create(name: userInput.name, email: userInput.email, password: userInput.password, confirmPassword: userInput.confirmPassword)
-        //try User.Create.validate(content: userCreate)
         
         guard userInput.password == userInput.confirmPassword else {
             throw Abort(.badRequest, reason: "Passwords did not match")
@@ -129,13 +128,7 @@ struct Handler: APIProtocol {
         return .created(.init(body: .json(userapi)))
     }
     
-    func GetMyBooks(_ input: Operations.GetMyBooks.Input) async throws -> Operations.GetMyBooks.Output {
-        <#code#>
-    }
-    
-    func addBookToMyList(_ input: Operations.addBookToMyList.Input) async throws -> Operations.addBookToMyList.Output {
-        <#code#>
-    }
+
     
     
  /**   func login(_ input: Operations.login.Input) async throws -> Operations.login.Output {

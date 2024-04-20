@@ -8,7 +8,7 @@
 import Vapor
 import Fluent
 
-final class User: Model, Content {
+final class User: Model, Content, Authenticatable {
     static let schema = "users"
     
     @ID(key: .id)
@@ -50,6 +50,7 @@ extension User.Create: Validatable {
         validations.add("password", as: String.self, is: .count(8...))
     }
 }
+
 extension User: ModelAuthenticatable {
     static let usernameKey = \User.$email
     static let passwordHashKey = \User.$passwordHash

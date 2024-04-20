@@ -7,10 +7,13 @@ import Vapor
 import Fluent
 import FluentPostgresDriver
 import Logging
+import Metrics
+import Prometheus
 
 @main struct booksServiceServer {
     static func main() async throws {
-        
+        let registry = PrometheusCollectorRegistry()
+        MetricsSystem.bootstrap(PrometheusMetricsFactory(registry: registry))
         let app = Vapor.Application()
         var logger : Logger =  .init(label: "BookService")
         logger.logLevel = .trace
@@ -32,17 +35,32 @@ import Logging
         try app.autoMigrate().wait()
         logger.info("migrations successfull added")
         
-        let passwordProtected = app.grouped(User.authenticator())
-        passwordProtected.post("login") { req async throws -> UserToken in
-            let user = try req.auth.require(User.self)
-            let token = try user.generateToken()
-            try await token.save(on: req.db)
-            return token
+        app.get("metrics") { request in
+            var buffer: [UInt8] = []
+            buffer.reserveCapacity(1024)
+            registry.emit(into: &buffer)
+            return String(decoding: buffer, as: UTF8.self)
         }
         
+//        let passwordProtected = app.grouped(User.authenticator())
+//        passwordProtected.post("login") { req async throws -> UserToken in
+//            let user = try req.auth.require(User.self)
+//            let token = try user.generateToken()
+//            try await token.save(on: req.db)
+//            return token
+//        }
+        
+        let authMiddleware = AuthMiddleware()
+        app.middleware.use(authMiddleware as Middleware)
+        //let transport = VaporTransport(routesBuilder: app.grouped(authMiddleware))
         let transport = VaporTransport(routesBuilder: app)
         let handler = Handler(app: app, logger: logger)
-        try handler.registerHandlers(on: transport, serverURL: URL(string: "/api")!)
+        try handler.registerHandlers(on: transport, serverURL: Servers.server1(), middlewares: [MetricsMiddleware(counterPrefix: "BooksServiceServer")])
+        
+        let host = ProcessInfo.processInfo.environment["HOST"] ?? "localhost"
+        let port = ProcessInfo.processInfo.environment["PORT"].flatMap(Int.init) ?? 8080
+        
+        app.http.server.configuration.address = .hostname(host, port: port)
         try await app.execute()
     }
 }

@@ -5,30 +5,31 @@
 //  Created by Babeth Velghe on 08/04/2024.
 //
 
-import Fluent
 import Vapor
-import OpenAPIVapor
-import HTTPTypes
-import OpenAPIRuntime
+import Dependencies
 
 enum TaskLocals {
-
     @TaskLocal
     static var authorization: String?
 }
 
-struct AuthMiddleware : ServerMiddleware {
-    public func intercept(
-        _ request: HTTPRequest,
-        body: HTTPBody?,
-        metadata: ServerRequestMetadata,
-        operationID: String,
-        next: @Sendable (HTTPRequest, HTTPBody?, ServerRequestMetadata)
-            async throws -> (HTTPResponse, HTTPBody?)
-    ) async throws -> (HTTPResponse, HTTPBody?) {
-        let auth = request.headerFields[.authorization]
-        return try await TaskLocals.$authorization.withValue(auth) {
-            try await next(request, body, metadata)
-        }
+struct AuthMiddleware : AsyncBasicAuthenticator {
+    //typealias User
+    func authenticate(basic: Vapor.BasicAuthorization, for request: Vapor.Request) async throws {
+        request.auth.login(User(name: "", email: basic.username, passwordHash: basic.password))
     }
+    
+    
+    
+//    func respond(to request: Vapor.Request, chainingTo responder: any AsyncResponder) async throws -> Vapor.Response {
+////        try await withDependencies {
+////            $0.request = request
+////        } operation: {
+////            try await responder.respond(to: request)
+////        }
+////        try await TaskLocals.$authorization.withValue(request.headers.bearerAuthorization) {
+////            try await responder.respond(to: request)
+////        }
+//    }
+    
 }

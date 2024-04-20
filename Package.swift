@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "books-service",
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v13)
     ],dependencies: [
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
@@ -16,7 +16,9 @@ let package = Package(
         .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.14.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.7.2"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
-        
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-metrics", from: "2.4.1"),
+        .package(url: "https://github.com/swift-server/swift-prometheus", exact: "2.0.0-alpha.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -31,9 +33,12 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "PostgresNIO",package: "postgres-nio"),
                 .product(name: "Logging", package: "swift-log"),
-                
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Metrics", package: "swift-metrics"),
+                .product(name: "Prometheus", package: "swift-prometheus")
             ],
             plugins: [.plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")]
         ),
     ]
 )
+
