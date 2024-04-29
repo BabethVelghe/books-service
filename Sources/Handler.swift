@@ -14,6 +14,8 @@ import FluentPostgresDriver
 import Logging
 import Dependencies
 
+
+
 struct Handler: APIProtocol {
     @Dependency(\.request) var request
     // let passwordProtected : RoutesBuilder
@@ -36,10 +38,6 @@ struct Handler: APIProtocol {
         }
         logger.info("Converted books of database to return object")
         return .ok(.init(body: .json(booksArray)))
-
-        
-        // return .ok(.init(body: .json([Components.Schemas.Book(id: "", title: "", author: "")])))
-        
     }
     
     func getById(_ input: Operations.getById.Input) async throws -> Operations.getById.Output {
@@ -59,8 +57,14 @@ struct Handler: APIProtocol {
             logger.debug("Something went wrong with the Input.body")
             fatalError()
         }
-      
+        
         let id = UUID(uuidString: bookInput.id)
+        
+        //validations of book
+        if (bookInput.title.isEmpty || bookInput.author.isEmpty) {
+            throw Abort(.badRequest, reason: "Invalid title or author")
+        }
+        
         var book = Book(id: id, title: bookInput.title, author: bookInput.author)
         try await book.save(on: app.db)
         
@@ -118,6 +122,8 @@ struct Handler: APIProtocol {
             email: userCreate.email,
             passwordHash: Bcrypt.hash(userCreate.password)
         )
+        
+        //User.validate()
         // Save the user to the database
         try await user.save(on: app.db)
         
@@ -153,3 +159,4 @@ struct Handler: APIProtocol {
     } */
     
 }
+

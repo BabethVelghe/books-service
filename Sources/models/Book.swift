@@ -28,13 +28,6 @@ final class Book: Model, Content {
     
 }
 
-/**
-extension Book : Validatable {
-    static func validations(_ validations: inout Validations) {
-        validations.add("title", as: String.self, is: !.empty && .alphanumeric)
-        
-    }
-}
- */
+
 
 

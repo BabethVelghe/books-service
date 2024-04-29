@@ -37,6 +37,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    example: "input wasn't valid"
+          
   /books/{id}:
     get:
       operationId: getById
@@ -115,6 +126,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: The ID of the book
         title:
           type: string
